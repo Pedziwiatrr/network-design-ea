@@ -1,5 +1,11 @@
 # Network Design using Evolutionary Algorithm
 
+## Authors
+
+* Michał Pędziwiatr
+* Kacper Siemionek
+* Wojciech Ziezinka (for mental support)
+
 ## Project Goal
 
 This project uses an Evolutionary Algorithm (EA) to find the cheapest design for a telecommunication network.
