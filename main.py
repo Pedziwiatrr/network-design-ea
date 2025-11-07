@@ -2,6 +2,7 @@ import network
 import ga_aggregation
 import ga_deaggregation
 import time
+import os
 
 POPULATION_SIZE = 50
 GENERATIONS = 100
@@ -13,6 +14,8 @@ MODULARITY_M = 10.0
 
 AGGREGATION_MODE = True
 
+OUTPUT_DIR = "results"
+
 
 def main():
     print(f"Starting EA for network optimization")
@@ -21,9 +24,13 @@ def main():
     print(f"Population: {POPULATION_SIZE}, Generations: {GENERATIONS}")
     print(f"Mutation: {MUTATION_RATE}, Crossover: {CROSSOVER_RATE}")
 
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+        print(f"Created output directory: {OUTPUT_DIR}")
+
     net_data = network.get_network_data()
 
-    topo_filename = "network_topology.png"
+    topo_filename = os.path.join(OUTPUT_DIR, "network_topology.png")
     network.visualize_network(net_data, topo_filename)
     print(f"\nBase network topology saved to {topo_filename}")
 
@@ -55,7 +62,9 @@ def main():
     print(f"\nCalculations finished in {end_time - start_time:.2f} s")
     print(f"Best found cost (fitness): {best_individual['fitness']}")
 
-    solution_filename = f"solution_{'agg' if AGGREGATION_MODE else 'deagg'}_m{MODULARITY_M}.png"
+    base_solution_fn = f"solution_{'agg' if AGGREGATION_MODE else 'deagg'}_m{MODULARITY_M}.png"
+    solution_filename = os.path.join(OUTPUT_DIR, base_solution_fn)
+
     network.visualize_solution(
         net_data,
         best_individual,

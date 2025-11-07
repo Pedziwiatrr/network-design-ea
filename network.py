@@ -5,6 +5,7 @@ import collections
 import networkx as nx
 import matplotlib.pyplot as plt
 import math
+import os
 
 
 def get_network_data():
@@ -146,4 +147,10 @@ def visualize_solution(network_data, individual, modularity_m, is_aggregation, f
 
 if __name__ == '__main__':
     net_data = get_network_data()
-    visualize_network(net_data, "network_topology_test.png")
+
+    output_dir = "results"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    test_filename = os.path.join(output_dir, "network_topology_test.png")
+    visualize_network(net_data, test_filename)
