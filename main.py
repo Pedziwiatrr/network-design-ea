@@ -23,6 +23,10 @@ def main():
 
     net_data = network.get_network_data()
 
+    topo_filename = "network_topology.png"
+    network.visualize_network(net_data, topo_filename)
+    print(f"\nBase network topology saved to {topo_filename}")
+
     start_time = time.time()
 
     if AGGREGATION_MODE:
@@ -50,8 +54,16 @@ def main():
 
     print(f"\nCalculations finished in {end_time - start_time:.2f} s")
     print(f"Best found cost (fitness): {best_individual['fitness']}")
-    print(f"Best solution (chromosome):")
-    print(best_individual['chromosome'])
+
+    solution_filename = f"solution_{'agg' if AGGREGATION_MODE else 'deagg'}_m{MODULARITY_M}.png"
+    network.visualize_solution(
+        net_data,
+        best_individual,
+        MODULARITY_M,
+        AGGREGATION_MODE,
+        solution_filename
+    )
+    print(f"Solution graph saved to {solution_filename}")
 
 
 if __name__ == "__main__":
