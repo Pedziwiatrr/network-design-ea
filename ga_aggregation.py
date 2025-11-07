@@ -12,14 +12,8 @@ def calculate_fitness(chromosome, network_data, modularity_m):
         demand_value = demand['value']
 
         for edge in chosen_path:
-            found_edge = None
-            for net_edge in network_data['edges']:
-                if net_edge == edge:
-                    found_edge = net_edge
-                    break
-
-            if found_edge in edge_loads:
-                edge_loads[found_edge] += demand_value
+            if edge in edge_loads:
+                edge_loads[edge] += demand_value
             else:
                 pass
 
