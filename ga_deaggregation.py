@@ -5,7 +5,7 @@ import copy
 
 def _normalize_ratios(ratios):
     total = sum(ratios)
-    if total == 0:
+    if total <= 0:
         return [1.0 / len(ratios)] * len(ratios)
     return [r / total for r in ratios]
 
@@ -22,14 +22,8 @@ def calculate_fitness(chromosome, network_data, modularity_m):
             flow_on_path = demand_value * ratio
             path = available_paths[path_index]
             for edge in path:
-                found_edge = None
-                for net_edge in network_data['edges']:
-                    if net_edge == edge:
-                        found_edge = net_edge
-                        break
-
-                if found_edge in edge_loads:
-                    edge_loads[found_edge] += flow_on_path
+                if edge in edge_loads:
+                    edge_loads[edge] += flow_on_path
                 else:
                     pass
 
