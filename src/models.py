@@ -1,4 +1,5 @@
-import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 @dataclass
 class Node:
@@ -21,10 +22,6 @@ class Demand:
     target: str
     value: float
     allowed_paths: List[List[str]] = field(default_factory=list)
-
-@dataclass
-class Network:
-    nodes:
 
 @dataclass
 class Network:
