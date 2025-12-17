@@ -21,7 +21,7 @@ class Demand:
     source: str
     target: str
     value: float
-    allowed_paths: List[List[str]] = field(default_factory=list)
+    admissable_paths: List[List[str]] = field(default_factory=list)
 
 @dataclass
 class Network:
