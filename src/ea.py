@@ -55,7 +55,7 @@ class EvoSolver:
     def calculate_cost(self, individual):
         loads = self.get_link_loads(individual)
         total_cost = 0
-        for load in load.values():
+        for load in loads.values():
             total_cost += math.ceil(load / self.modularity)
         return total_cost
 
