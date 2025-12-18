@@ -4,7 +4,7 @@ import math
 from copy import deepcopy
 from .models import Network
 
-# 🧬🧬🧬
+
 class EvoSolver:
     def __init__(self, network: Network, modularity: float = 1.0, aggregation: bool = True,
                  pop_size: int = 100, generations: int = 100, mutation_rate: float = 0.1, alpha: float = 0.5):
@@ -32,14 +32,14 @@ class EvoSolver:
             # connecting weights to admissable paths
             weights = individual[i, :num_paths]
 
-            # Aggregation - Winner takes all >:) 🤑 🎩
+            # Aggregation - Winner takes all
             if self.aggregation:
                 chosen_idx = np.argmax(weights)
                 chosen_path = paths[chosen_idx]
                 for link_id in chosen_path:
                     link_loads[link_id] += demand.value
 
-            # Deaggregation - Flow proportional to weights ☭ 🫱🏻‍🫲🏼
+            # Deaggregation - Flow proportional to weights
             else:
                 total_weight = np.sum(weights)
                 ratios = weights / total_weight
