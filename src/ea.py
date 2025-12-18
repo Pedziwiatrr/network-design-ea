@@ -16,8 +16,9 @@ class EvoSolver:
         self.mutation_rate = mutation_rate
         self.alpha = alpha
         self.population = []
+        self.demand_ids = list(network.demands.keys())
 
-    def get_link_loads(self):
+    def get_link_loads(self, individual):
         link_loads = {lid: 0.0 for lid in self.network.links}
 
         for i, d_id in enumerate(self.demand_ids):
@@ -33,7 +34,7 @@ class EvoSolver:
 
             # Aggregation - Winner takes all >:) 🤑 🎩
             if self.aggregation:
-                chosen_idx = np.argmax(weight)
+                chosen_idx = np.argmax(weights)
                 chosen_path = paths[chosen_idx]
                 for link_id in chosen_path:
                     link_loads[link_id] += demand.value
@@ -41,7 +42,7 @@ class EvoSolver:
             # Deaggregation - Flow proportional to weights ☭ 🫱🏻‍🫲🏼
             else:
                 total_weight = np.sum(weights)
-                ratios = weights / total_w
+                ratios = weights / total_weight
 
                 for idx, ratio in enumerate(ratios):
                     flow = demand.value * ratio
