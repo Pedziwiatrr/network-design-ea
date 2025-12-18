@@ -12,8 +12,6 @@ class Link:
     id: str
     source: str
     target: str
-    cost: float = 0.0
-    capacity: float = 0.0
 
 @dataclass
 class Demand:
