@@ -83,6 +83,9 @@ class EvoSolver:
         Main evolution loop.
         """
 
+        self.initialize_population()
+        best_global_cost = float('inf')
+
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
 
