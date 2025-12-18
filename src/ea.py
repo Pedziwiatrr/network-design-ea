@@ -94,8 +94,8 @@ class EvoSolver:
                 best_global_cost = min_cost
 
             new_population = []
-            while len(new_population) < self.pop_size:
-                pass
+            #while len(new_population) < self.pop_size:
+                #pass
                 #TODO: selection, mutation, crossovers etc. Making new generation.
 
             #TODO: finishing the function with the rest of new gen's creation.
