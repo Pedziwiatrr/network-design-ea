@@ -52,13 +52,27 @@ class EvoSolver:
 
         return link_loads
 
+    def calculate_cost(self, individual):
+        loads = self.get_link_loads(individual)
+        total_cost = 0
+        for load in load.values():
+            total_cost += math.ceil(load / self.modularity)
+        return total_cost
+
+    def initialize_population(self):
+        self.population = []
+        #TODO: pop init
+        pass
+
     def selection(self, scores, k):
         #TODO: selection tournament
         pass
 
     def crossover(self, first, second):
-        #TODO: arythmetic avg parent's values
-        pass
+        """
+        arithmetic crossover: descendant weights based on parent's weights linear combination
+        """
+        return self.alpha * first + (1 - self.alpha) * second
 
     def mutation(self, individual):
         #TODO: gaussian mutation
