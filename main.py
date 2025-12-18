@@ -32,7 +32,7 @@ def main():
             print(f"> Link count: {len(network.links)}")
             print("-" * 50)
             for link in network.links.values():
-                print(f"ID: {link.id:<12} Src: {link.source:<12} -> Tgt: {link.target:<12} Cost: {link.cost}")
+                print(f"ID: {link.id:<12} Src: {link.source:<12} -> Tgt: {link.target:<12}")
 
         if args.demands or args.all:
             print("="*100)

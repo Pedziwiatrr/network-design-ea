@@ -50,7 +50,7 @@ class SNDlibLoader:
                         node_id = match.group(1)
                         x = float(match.group(2))
                         y = float(match.group(3))
-                        network.add_node(Node(id=node_id, x=float(x), y = float(y)))
+                        network.add_node(Node(id=node_id, x=x, y = y))
                 elif current_section == 'LINKS':
                     match = link_pattern.search(line)
                     if match:
@@ -58,16 +58,16 @@ class SNDlibLoader:
                         src = match.group(2)
                         trg = match.group(3)
                         parts = line.split()
-                        cost = parts[8]
-                        network.add_link(Link(id=link_id, source=src, target=trg, cost=float(cost)))
+                        cost = float(parts[8])
+                        network.add_link(Link(id=link_id, source=src, target=trg, cost=cost))
                 elif current_section == 'DEMANDS':
                     match = demand_pattern.search(line)
                     if match:
                         demand_id = match.group(1)
                         src = match.group(2)
                         trg = match.group(3)
-                        val = match.group(4)
-                        network.add_demand(Demand(id=demand_id, source=src, target=trg, value=float(val)))
+                        val = float(match.group(4))
+                        network.add_demand(Demand(id=demand_id, source=src, target=trg, value=val))
                 elif current_section == 'PATHS':
                     if line.startswith('Demand_'):
                         parts = line.split()
