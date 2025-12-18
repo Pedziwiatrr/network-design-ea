@@ -58,15 +58,15 @@ class SNDlibLoader:
                         src = match.group(2)
                         trg = match.group(3)
                         parts = line.split()
-                        cost = float(parts[8])
-                        network.add_link(Link(id=link_id, source=src, target=trg))
+                        cost = parts[8]
+                        network.add_link(Link(id=link_id, source=src, target=trg, cost=float(cost)))
                 elif current_section == 'DEMANDS':
                     match = demand_pattern.search(line)
                     if match:
                         demand_id = match.group(1)
                         src = match.group(2)
                         trg = match.group(3)
-                        val = float(match.group(4))
+                        val = match.group(4)
                         network.add_demand(Demand(id=demand_id, source=src, target=trg, value=float(val)))
                 elif current_section == 'PATHS':
                     if line.startswith('Demand_'):
