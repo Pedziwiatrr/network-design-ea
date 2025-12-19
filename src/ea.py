@@ -60,18 +60,33 @@ class EvoSolver:
         return total_cost
 
     def initialize_population(self):
+        """ Initialize population with 1 deterministic individual and the rest generated randomly """
         self.population = []
-        #TODO: pop init
-        pass
+
+        num_demands = len(self.demand_ids)
+        max_paths = max(len(self.network.demands[demand_id].admissable_paths) for demand_id in self.demand_ids)
+
+        # deterministic - 1 individual
+        deterministic_individual = np.zeros((num_demands, max_paths))
+        for i, demand_id in enumerate(self.demand_ids):
+            paths = self.network.demands[demand_id].admissable_paths
+            shortest_path_idx = np.argmin([len(p) for p in paths])
+            deterministic_individual[i, shortest_path_idx] = 1.0
+
+        self.population.append(deterministic_individual)
+
+        # random - the rest
+        for i in range(self.pop_size - 1):
+            random_individual  = np.random.rand(num_demands, max_paths)
+            self.population.append(random_individual)
+
 
     def selection(self, scores, k):
         #TODO: selection tournament
         pass
 
     def crossover(self, first, second):
-        """
-        arithmetic crossover: descendant weights based on parent's weights linear combination
-        """
+        """ arithmetic crossover: descendant weights based on parent's weights linear combination """
         return self.alpha * first + (1 - self.alpha) * second
 
     def mutation(self, individual):
@@ -79,9 +94,7 @@ class EvoSolver:
         pass
 
     def run(self):
-        """
-        Main evolution loop.
-        """
+        """ Main evolution loop. """
 
         self.initialize_population()
         best_global_cost = float('inf')
