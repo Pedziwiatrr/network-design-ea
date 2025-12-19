@@ -6,8 +6,16 @@ from .models import Network
 
 
 class EvoSolver:
-    def __init__(self, network: Network, modularity: float = 1.0, aggregation: bool = True,
-                 pop_size: int = 100, generations: int = 100, mutation_rate: float = 0.1, alpha: float = 0.5):
+    def __init__(
+        self,
+        network: Network,
+        modularity: float = 1.0,
+        aggregation: bool = True,
+        pop_size: int = 100,
+        generations: int = 100,
+        mutation_rate: float = 0.1,
+        alpha: float = 0.5,
+    ):
         self.network = network
         self.modularity = modularity
         self.aggregation = aggregation
@@ -19,6 +27,13 @@ class EvoSolver:
         self.demand_ids = list(network.demands.keys())
 
     def get_link_loads(self, individual):
+        """
+        Calculates total traffic load for each link in the network.
+
+        Implements two scenarios:
+        - aggregation: traffic follows the path with the highest weight (not splitted).
+        - deaggregation: traffic distributed proportionally among all paths (splitted).
+        """
         link_loads = {lid: 0.0 for lid in self.network.links}
 
         for i, d_id in enumerate(self.demand_ids):
@@ -42,7 +57,11 @@ class EvoSolver:
             # Deaggregation - Flow proportional to weights
             else:
                 total_weight = np.sum(weights)
-                ratios = weights / total_weight
+
+                if total_weight > 0:
+                    ratios = weights / total_weight
+                else:
+                    ratios = np.ones(num_paths) / num_paths
 
                 for idx, ratio in enumerate(ratios):
                     flow = demand.value * ratio
@@ -60,11 +79,14 @@ class EvoSolver:
         return total_cost
 
     def initialize_population(self):
-        """ Initialize population with 1 deterministic individual and the rest generated randomly """
+        """Initialize population with 1 deterministic individual and the rest generated randomly"""
         self.population = []
 
         num_demands = len(self.demand_ids)
-        max_paths = max(len(self.network.demands[demand_id].admissable_paths) for demand_id in self.demand_ids)
+        max_paths = max(
+            len(self.network.demands[demand_id].admissable_paths)
+            for demand_id in self.demand_ids
+        )
 
         # deterministic - 1 individual
         deterministic_individual = np.zeros((num_demands, max_paths))
@@ -77,27 +99,36 @@ class EvoSolver:
 
         # random - the rest
         for i in range(self.pop_size - 1):
-            random_individual  = np.random.rand(num_demands, max_paths)
+            random_individual = np.random.rand(num_demands, max_paths)
             self.population.append(random_individual)
 
+    def selection(self, scores, k=3):
+        """tournament selection"""
+        selected = random.sample(range(len(self.population)), k)
+        best_idx = selected[0]
+        for idx in selected:
+            if scores[idx] < scores[best_idx]:
+                best_idx = idx
 
-    def selection(self, scores, k):
-        #TODO: selection tournament
-        pass
+        return deepcopy(self.population[best_idx])
 
     def crossover(self, first, second):
-        """ arithmetic crossover: descendant weights based on parent's weights linear combination """
+        """arithmetic crossover: descendant weights based on parent's weights linear combination"""
         return self.alpha * first + (1 - self.alpha) * second
 
     def mutation(self, individual):
-        #TODO: gaussian mutation
-        pass
+        """gaussian mutation"""
+        mask = np.random.rand(*individual.shape) < self.mutation_rate
+        noise = np.random.normal(0, 0.1, individual.shape)
+        individual[mask] += noise[mask]
+        individual[individual < 0] = 0
 
     def run(self):
-        """ Main evolution loop. """
+        """Main evolution loop."""
 
         self.initialize_population()
-        best_global_cost = float('inf')
+        best_global_cost = float("inf")
+        last_improvement_gen = 0
 
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
@@ -105,12 +136,19 @@ class EvoSolver:
             min_cost = min(scores)
             if min_cost < best_global_cost:
                 best_global_cost = min_cost
+                last_improvement_gen = gen
 
             new_population = []
-            #while len(new_population) < self.pop_size:
-                #pass
-                #TODO: selection, mutation, crossovers etc. Making new generation.
 
-            #TODO: finishing the function with the rest of new gen's creation.
+            while len(new_population) < self.pop_size:
+                parent1 = self.selection(scores)
+                parent2 = self.selection(scores)
 
-        return best_global_cost
+                child = self.crossover(parent1, parent2)
+                self.mutation(child)
+
+                new_population.append(child)
+
+            self.population = new_population
+
+        return best_global_cost, last_improvement_gen
