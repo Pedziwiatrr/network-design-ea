@@ -4,84 +4,56 @@ import numpy as np
 from src.loader import SNDlibLoader
 from src.ea import EvoSolver
 
+
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--nodes', action='store_true')
-    parser.add_argument('--links', action='store_true')
-    parser.add_argument('--demands', action='store_true')
-    parser.add_argument('--test_solver', action='store_true')
-    parser.add_argument('--all', action='store_true')
-    parser.add_argument('--file', type=str, default=os.path.join(base_dir, 'data', 'polska.txt'))
+    parser.add_argument(
+        "--file", type=str, default=os.path.join(base_dir, "data", "polska.txt")
+    )
+    parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--pop", type=int, default=300)
+    parser.add_argument("--gens", type=int, default=300)
     args = parser.parse_args()
 
     try:
-        print(f"Loading data from {args.file}")
         network = SNDlibLoader.load(args.file)
+        modularities = [1, 10, 100, 1000]
+        scenarios = [True, False]
 
-        if args.nodes or args.all:
-            print("="*100)
-            print(f"> Node count: {len(network.nodes)}")
-            print("-" * 50)
-            for node in network.nodes.values():
-                print(f"ID: {node.id:<12} X: {node.x:<8} Y: {node.y}")
+        print("\n" + "=" * 110)
+        print(
+            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Standard Deviation':<20} | {'Last improvement gen':<30}"
+        )
+        print("-" * 110)
 
-        if args.links or args.all:
-            print("="*100)
-            print(f"> Link count: {len(network.links)}")
-            print("-" * 50)
-            for link in network.links.values():
-                print(f"ID: {link.id:<12} Src: {link.source:<12} -> Tgt: {link.target:<12}")
+        for agg in scenarios:
+            mode_label = "Aggregation" if agg else "Deaggregation"
+            for m in modularities:
+                costs = []
+                gens = []
+                for _ in range(args.repeats):
+                    solver = EvoSolver(
+                        network,
+                        modularity=m,
+                        aggregation=agg,
+                        pop_size=args.pop,
+                        generations=args.gens,
+                    )
+                    best, conv = solver.run()
+                    costs.append(best)
+                    gens.append(conv)
 
-        if args.demands or args.all:
-            print("="*100)
-            print(f"> Demand count: {len(network.demands)}")
-            print("-" * 50)
-            for demand in network.demands.values():
-                print(f"Demand: {demand.id}")
-                print(f"    Route: {demand.source} -> {demand.target}")
-                print(f"    Value: {demand.value}")
-                print(f"    Admissible paths count: {len(demand.admissable_paths)}")
-                print(f"    Admissable paths:")
-                for i, path in enumerate(demand.admissable_paths):
-                     print(f"   {i}: {path}")
-                print("-" * 50)
+                print(
+                    f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
+                    f"{np.std(costs):<20.2f} | {np.mean(gens):<30.1f}"
+                )
 
-        if args.test_solver or args.all:
-            print()
-            print("="*100)
-            print("< Testing evolutionary solver >\n")
-            solver = EvoSolver(network, modularity=1.0, aggregation=True)
-
-            num_demands = len(solver.demand_ids)
-            max_paths = max(len(d.admissable_paths) for d in network.demands.values())
-
-            test_individual = np.random.rand(num_demands, max_paths)
-            test_individual_2 = np.random.rand(num_demands, max_paths)
-
-            print("-" * 50)
-            print(" test get_link_loads:")
-            loads = solver.get_link_loads(test_individual)
-            print(f" all loads: {loads}")
-            total_load = sum(loads.values())
-            print(f" total load in network: {total_load:.2f}")
-
-            print("-" * 50)
-            print(" test calculate_cost:")
-            cost = solver.calculate_cost(test_individual)
-            print(f" calculated cost: {cost}")
-            print("-" * 50)
-
-            print(" test crossover")
-            child = solver.crossover(test_individual, test_individual_2)
-            print(f" crossover child: {child} ")
-            print("="*100)
-
-        print("finito")
+        print("=" * 110)
 
     except Exception as e:
-        print(f"ERROR! : {e} :(")
+        print(f"ERROR: {e} :(")
+
 
 if __name__ == "__main__":
     main()
