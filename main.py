@@ -14,6 +14,8 @@ def main():
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--pop", type=int, default=300)
     parser.add_argument("--gens", type=int, default=300)
+    parser.add_argument("--mutation_rate", type=float, default=0.1)
+    parser.add_argument("--alpha", type=float, default=0.5)
     args = parser.parse_args()
 
     try:
@@ -39,6 +41,8 @@ def main():
                         aggregation=agg,
                         pop_size=args.pop,
                         generations=args.gens,
+                        mutation_rate=args.mutation_rate,
+                        alpha=args.alpha,
                     )
                     best, conv = solver.run()
                     costs.append(best)
