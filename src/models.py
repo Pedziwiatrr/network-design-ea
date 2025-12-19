@@ -1,17 +1,20 @@
 from dataclasses import dataclass, field
 from typing import List
 
+
 @dataclass
 class Node:
     id: str
     x: float = 0.0
     y: float = 0.0
 
+
 @dataclass
 class Link:
     id: str
     source: str
     target: str
+
 
 @dataclass
 class Demand:
@@ -20,6 +23,7 @@ class Demand:
     target: str
     value: float
     admissable_paths: List[List[str]] = field(default_factory=list)
+
 
 @dataclass
 class Network:
