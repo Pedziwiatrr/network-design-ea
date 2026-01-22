@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+.kacpersiemionek/
+results/results.json
