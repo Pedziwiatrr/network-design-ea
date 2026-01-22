@@ -8,6 +8,7 @@ from src.ea import EvoSolver
 
 
 def main():
+    global_start_time = time.time()
     base_dir = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -32,7 +33,7 @@ def main():
         print(
             f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
         )
-        print("\n" + "=" * 130)
+        print("-" * 130)
         results_data = []
 
         for agg in scenarios:
@@ -78,7 +79,7 @@ def main():
 
                 print(
                     f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
-                    f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.4f}s"
+                    f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.4f}s ({np.sum(times):.2f}s total)"
                 )
             print("-" * 130)
 
@@ -88,6 +89,11 @@ def main():
         with open("results/results.json", "w") as fh:
             json.dump(results_data, fh, indent=4)
         print("Results saved to results/results.json")
+
+        global_end_time = time.time()
+        print(
+            f"\nTotal execution time: {global_end_time - global_start_time:.2f} seconds"
+        )
 
     except Exception as e:
         print(f"ERROR: {e} :(")
