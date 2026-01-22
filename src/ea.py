@@ -133,12 +133,14 @@ class EvoSolver:
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
 
+            min_idx = np.argmin(scores)
             min_cost = min(scores)
+
             if min_cost < best_global_cost:
                 best_global_cost = min_cost
                 last_improvement_gen = gen
 
-            new_population = []
+            new_population = [deepcopy(self.population[min_idx])]
 
             while len(new_population) < self.pop_size:
                 parent1 = self.selection(scores)
