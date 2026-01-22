@@ -25,12 +25,14 @@ def main():
         modularities = [1, 10, 100, 1000]
         scenarios = [True, False]
 
+        print(
+            f"REPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, ALPHA: {args.alpha}"
+        )
         print("\n" + "=" * 130)
         print(
-            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Std Dev':<10} | {'Last Improv Gen':<20} | {'Avg Time':<10}"
+            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
         )
-        print("-" * 130)
-
+        print("\n" + "=" * 130)
         results_data = []
 
         for agg in scenarios:
@@ -78,6 +80,7 @@ def main():
                     f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
                     f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.4f}s"
                 )
+            print("-" * 130)
 
         print("=" * 130)
 
