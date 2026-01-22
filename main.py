@@ -43,7 +43,7 @@ def main():
         )
         print("=" * 130)
         print(
-            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<8} | {'Convergence Gen':<15} | {'Avg Time':<10}"
+            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
         )
         results_data = []
 
@@ -91,7 +91,7 @@ def main():
 
                 print(
                     f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
-                    f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.4f}s ({np.sum(times):.2f}s total)"
+                    f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.2f}s ({np.sum(times):.2f}s total)"
                 )
 
         print("=" * 130)
