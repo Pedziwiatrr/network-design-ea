@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 from src.loader import SNDlibLoader
 from src.ea import EvoSolver
+from src import config
 
 
 def calculate_link_loads(network, chromosome):
@@ -83,29 +84,23 @@ def visualize_network(file_path, chromosome, modularity):
     plt.axis("off")
     plt.tight_layout()
 
-    output_dir = "results"
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "map_visualization.png")
+    os.makedirs(config.RESULTS_DIR, exist_ok=True)
+    output_path = os.path.join(config.RESULTS_DIR, "map_visualization.png")
     plt.savefig(output_path, dpi=300)
     print(f"Map saved to {output_path}")
 
 
 if __name__ == "__main__":
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-
     parser = argparse.ArgumentParser()
+    parser.add_argument("--file", type=str, default=config.DATA_FILE)
+    parser.add_argument("--modularity", type=float, default=config.DEFAULT_MODULARITY)
+    parser.add_argument("--pop", type=int, default=config.DEFAULT_POP_SIZE)
+    parser.add_argument("--gens", type=int, default=config.DEFAULT_GENERATIONS)
     parser.add_argument(
-        "--file", type=str, default=os.path.join(base_dir, "data", "polska.txt")
+        "--mutation_rate", type=float, default=config.DEFAULT_MUTATION_RATE
     )
-    parser.add_argument("--modularity", type=float, default=10)
-    parser.add_argument("--pop", type=int, default=200)
-    parser.add_argument("--gens", type=int, default=50)
-    parser.add_argument("--mutation_rate", type=float, default=0.4)
-    parser.add_argument("--alpha", type=float, default=0.5)
-    parser.add_argument(
-        "--deagg",
-        action="store_true",
-    )
+    parser.add_argument("--alpha", type=float, default=config.DEFAULT_ALPHA)
+    parser.add_argument("--deagg", action="store_true")
     args = parser.parse_args()
 
     is_aggregation = not args.deagg

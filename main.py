@@ -1,24 +1,25 @@
-import os
 import argparse
 import numpy as np
 import json
 import time
+import os
 from src.loader import SNDlibLoader
 from src.ea import EvoSolver
+from src import config
 
 
 def main():
     global_start_time = time.time()
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+
     parser = argparse.ArgumentParser()
+    parser.add_argument("--file", type=str, default=config.DATA_FILE)
+    parser.add_argument("--repeats", type=int, default=config.DEFAULT_REPEATS)
+    parser.add_argument("--pop", type=int, default=config.DEFAULT_POP_SIZE)
+    parser.add_argument("--gens", type=int, default=config.DEFAULT_GENERATIONS)
     parser.add_argument(
-        "--file", type=str, default=os.path.join(base_dir, "data", "polska.txt")
+        "--mutation_rate", type=float, default=config.DEFAULT_MUTATION_RATE
     )
-    parser.add_argument("--repeats", type=int, default=10)
-    parser.add_argument("--pop", type=int, default=300)
-    parser.add_argument("--gens", type=int, default=100)
-    parser.add_argument("--mutation_rate", type=float, default=0.5)
-    parser.add_argument("--alpha", type=float, default=0.5)
+    parser.add_argument("--alpha", type=float, default=config.DEFAULT_ALPHA)
     parser.add_argument(
         "--mode",
         type=str,
@@ -29,7 +30,7 @@ def main():
 
     try:
         network = SNDlibLoader.load(args.file)
-        modularities = [1, 10, 100, 1000]
+        modularities = config.DEFAULT_MODULARITIES
 
         if args.mode == "agg":
             modes = [True]
@@ -56,6 +57,9 @@ def main():
                 histories = []
                 times = []
 
+                best_chromosome_overall = None
+                best_cost_overall = float("inf")
+
                 for _ in range(args.repeats):
                     solver = EvoSolver(
                         network,
@@ -68,8 +72,12 @@ def main():
                     )
 
                     start_time = time.time()
-                    best, conv, history = solver.run()
+                    best_chrom, best, conv, history = solver.run()
                     end_time = time.time()
+
+                    if best < best_cost_overall:
+                        best_cost_overall = best
+                        best_chromosome_overall = best_chrom
 
                     costs.append(best)
                     gens.append(conv)
@@ -86,6 +94,9 @@ def main():
                         "avg_convergence": float(np.mean(gens)),
                         "avg_time": float(np.mean(times)),
                         "histories": histories[0],
+                        "best_chromosome": best_chromosome_overall.tolist()
+                        if best_chromosome_overall is not None
+                        else [],
                     }
                 )
 
@@ -96,8 +107,8 @@ def main():
 
         print("=" * 130)
 
-        os.makedirs("results", exist_ok=True)
-        output_file = "results/results.json"
+        os.makedirs(config.RESULTS_DIR, exist_ok=True)
+        output_file = os.path.join(config.RESULTS_DIR, "results.json")
 
         with open(output_file, "w") as fh:
             json.dump(results_data, fh, indent=4)
