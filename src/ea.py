@@ -130,15 +130,17 @@ class EvoSolver:
         best_global_cost = float("inf")
         last_improvement_gen = 0
         best_costs_history = []
+        best_chromosome = None
 
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
 
             min_idx = np.argmin(scores)
-            min_cost = min(scores)
+            min_cost = scores[min_idx]
 
             if min_cost < best_global_cost:
                 best_global_cost = min_cost
+                best_chromosome = deepcopy(self.population[min_idx])
                 last_improvement_gen = gen
 
             best_costs_history.append(best_global_cost)
@@ -156,4 +158,9 @@ class EvoSolver:
 
             self.population = new_population
 
-        return best_global_cost, last_improvement_gen, best_costs_history
+        return (
+            best_chromosome,
+            best_global_cost,
+            last_improvement_gen,
+            best_costs_history,
+        )
