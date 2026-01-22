@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import networkx as nx
 import os
 import argparse
@@ -35,10 +36,14 @@ def visualize_network(file_path, chromosome, modularity):
 
     G = nx.Graph()
 
+    xs = []
+    ys = []
     pos = {}
     for node in network.nodes.values():
         G.add_node(node.id)
         pos[node.id] = (node.x, node.y)
+        xs.append(node.x)
+        ys.append(node.y)
 
     edges = []
     weights = []
@@ -52,14 +57,30 @@ def visualize_network(file_path, chromosome, modularity):
             weights.append(load)
             edge_labels[(link.source, link.target)] = str(int(load))
 
-    plt.figure(figsize=(12, 10))
+    plt.figure(figsize=(12, 12))
 
-    nx.draw_networkx_nodes(
-        G, pos, node_size=700, node_color="lightblue", edgecolors="black"
-    )
+    img_path = os.path.join(os.path.dirname(file_path), "polska.png")
 
-    label_pos = {k: (v[0], v[1] + 0.15) for k, v in pos.items()}
-    nx.draw_networkx_labels(G, label_pos, font_size=14, font_weight="bold")
+    if os.path.exists(img_path):
+        try:
+            img = mpimg.imread(img_path)
+
+            min_x, max_x = min(xs), max(xs)
+            min_y, max_y = min(ys), max(ys)
+
+            margin_x = (max_x - min_x) * 0.1
+            margin_y = (max_y - min_y) * 0.1
+
+            extent = [
+                min_x - margin_x,
+                max_x + margin_x,
+                min_y - margin_y,
+                max_y + margin_y,
+            ]
+
+            plt.imshow(img, extent=extent, aspect="auto", alpha=0.3)
+        except Exception as e:
+            print(f"Could not load background image: {e}")
 
     if weights:
         max_load = max(weights)
@@ -70,6 +91,13 @@ def visualize_network(file_path, chromosome, modularity):
     nx.draw_networkx_edges(
         G, pos, edgelist=edges, width=norm_weights, edge_color="blue", alpha=0.6
     )
+
+    nx.draw_networkx_nodes(
+        G, pos, node_size=700, node_color="lightblue", edgecolors="black"
+    )
+
+    label_pos = {k: (v[0], v[1] + 0.15) for k, v in pos.items()}
+    nx.draw_networkx_labels(G, label_pos, font_size=14, font_weight="bold")
 
     nx.draw_networkx_edge_labels(
         G,
