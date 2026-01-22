@@ -34,7 +34,7 @@ def plot_convergence(data, target_modularity=10):
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
 
-    output_path = os.path.join("results", "convergence_plot.png")
+    output_path = os.path.join("results/plots", "convergence_plot.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
 
@@ -102,7 +102,7 @@ def plot_comparison_bar(data):
     current_ylim = plt.ylim()
     plt.ylim(current_ylim[0], current_ylim[1] * 2)
 
-    output_path = os.path.join("results", "comparison_bar.png")
+    output_path = os.path.join("results/plots", "comparison_bar.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
 
@@ -136,7 +136,7 @@ def plot_time_complexity(data):
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
 
-    output_path = os.path.join("results", "time_plot.png")
+    output_path = os.path.join("results/plots", "time_plot.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
 
