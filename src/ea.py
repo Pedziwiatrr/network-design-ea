@@ -75,7 +75,7 @@ class EvoSolver:
         loads = self.get_link_loads(individual)
         total_cost = 0
         for load in loads.values():
-            total_cost += math.ceil(load / self.modularity)
+            total_cost += math.ceil(round(load, 6) / self.modularity)
         return total_cost
 
     def initialize_population(self):
@@ -119,9 +119,9 @@ class EvoSolver:
     def mutation(self, individual):
         """gaussian mutation"""
         mask = np.random.rand(*individual.shape) < self.mutation_rate
-        noise = np.random.normal(0, 0.1, individual.shape)
+        noise = np.random.normal(0, 0.2, individual.shape)
         individual[mask] += noise[mask]
-        individual[individual < 0] = 0
+        np.clip(individual, 0.0, 1.0, out=individual)
 
     def run(self):
         """Main evolution loop."""
