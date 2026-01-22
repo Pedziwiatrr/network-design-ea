@@ -129,6 +129,7 @@ class EvoSolver:
         self.initialize_population()
         best_global_cost = float("inf")
         last_improvement_gen = 0
+        best_costs_history = []
 
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
@@ -139,6 +140,8 @@ class EvoSolver:
             if min_cost < best_global_cost:
                 best_global_cost = min_cost
                 last_improvement_gen = gen
+
+            best_costs_history.append(best_global_cost)
 
             new_population = [deepcopy(self.population[min_idx])]
 
@@ -153,4 +156,4 @@ class EvoSolver:
 
             self.population = new_population
 
-        return best_global_cost, last_improvement_gen
+        return best_global_cost, last_improvement_gen, best_costs_history

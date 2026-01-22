@@ -1,6 +1,7 @@
 import os
 import argparse
 import numpy as np
+import json
 from src.loader import SNDlibLoader
 from src.ea import EvoSolver
 
@@ -29,11 +30,15 @@ def main():
         )
         print("-" * 110)
 
+        results_data = []
+
         for agg in scenarios:
             mode_label = "Aggregation" if agg else "Deaggregation"
             for m in modularities:
                 costs = []
                 gens = []
+                histories = []
+
                 for _ in range(args.repeats):
                     solver = EvoSolver(
                         network,
@@ -44,9 +49,23 @@ def main():
                         mutation_rate=args.mutation_rate,
                         alpha=args.alpha,
                     )
-                    best, conv = solver.run()
+                    best, conv, history = solver.run()
+
                     costs.append(best)
                     gens.append(conv)
+                    histories.append(history)
+
+                results_data.append(
+                    {
+                        "mode": mode_label,
+                        "modularity": m,
+                        "best_cost": float(np.min(costs)),
+                        "mean_cost": float(np.mean(costs)),
+                        "std_cost": float(np.std(costs)),
+                        "avg_convergence": float(np.mean(gens)),
+                        "histories": histories[0],
+                    }
+                )
 
                 print(
                     f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
@@ -55,6 +74,9 @@ def main():
 
         print("=" * 110)
 
+        os.makedirs("results", exist_ok=True)
+        with open("results/results.json", "w") as fh:
+            json.dump(results_data, fh, indent=4)
     except Exception as e:
         print(f"ERROR: {e} :(")
 
