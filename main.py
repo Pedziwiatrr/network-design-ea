@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--mutation_rate", type=float, default=0.5)
     parser.add_argument("--alpha", type=float, default=0.5)
     parser.add_argument(
-        "--scenario",
+        "--mode",
         type=str,
         default="all",
         choices=["all", "agg", "deagg"],
@@ -31,23 +31,23 @@ def main():
         network = SNDlibLoader.load(args.file)
         modularities = [1, 10, 100, 1000]
 
-        if args.scenario == "agg":
-            scenarios = [True]
-        elif args.scenario == "deagg":
-            scenarios = [False]
+        if args.mode == "agg":
+            modes = [True]
+        elif args.mode == "deagg":
+            modes = [False]
         else:
-            scenarios = [True, False]
+            modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SCENARIO: {args.scenario}"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {args.mode}"
         )
         print("=" * 130)
         print(
-            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
+            f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<8} | {'Convergence Gen':<15} | {'Avg Time':<10}"
         )
         results_data = []
 
-        for agg in scenarios:
+        for agg in modes:
             print("-" * 130)
             mode_label = "Aggregation" if agg else "Deaggregation"
             for m in modularities:
