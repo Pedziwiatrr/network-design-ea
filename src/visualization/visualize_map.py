@@ -3,7 +3,7 @@ import networkx as nx
 import os
 import argparse
 import numpy as np
-from src.loader import SNDlibLoader
+from src.utils.loader import SNDlibLoader
 from src.ea import EvoSolver
 from src import config
 

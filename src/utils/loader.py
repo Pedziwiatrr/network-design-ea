@@ -1,5 +1,5 @@
 import re
-from .models import Network, Node, Link, Demand
+from src.models import Network, Node, Link, Demand
 
 
 class SNDlibLoader:

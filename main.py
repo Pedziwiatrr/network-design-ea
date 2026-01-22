@@ -3,7 +3,7 @@ import numpy as np
 import json
 import time
 import os
-from src.loader import SNDlibLoader
+from src.utils.loader import SNDlibLoader
 from src.ea import EvoSolver
 from src import config
 
