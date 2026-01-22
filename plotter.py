@@ -17,6 +17,10 @@ def plot_convergence(data, target_modularity=10):
 
     subset = [d for d in data if d["modularity"] == target_modularity]
 
+    if not subset:
+        print(f"No data found for modularity {target_modularity}")
+        return
+
     for item in subset:
         plt.plot(
             item["histories"],
@@ -36,6 +40,9 @@ def plot_convergence(data, target_modularity=10):
 
 
 def plot_comparison_bar(data):
+    if not data:
+        return
+
     modes = ["Aggregation", "Deaggregation"]
     modularities = sorted(list(set(d["modularity"] for d in data)))
 
@@ -66,8 +73,24 @@ def plot_comparison_bar(data):
     width = 0.35
 
     plt.figure(figsize=(10, 6))
-    plt.bar(x - width / 2, agg_costs, width, label="Aggregation")
-    plt.bar(x + width / 2, deagg_costs, width, label="Deaggregation")
+    rects1 = plt.bar(x - width / 2, agg_costs, width, label="Aggregation")
+    rects2 = plt.bar(x + width / 2, deagg_costs, width, label="Deaggregation")
+
+    def autolabel(rects):
+        for rect in rects:
+            height = rect.get_height()
+            plt.text(
+                rect.get_x() + rect.get_width() / 2.0,
+                height,
+                f"{int(height)}",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+            )
+
+    autolabel(rects1)
+    autolabel(rects2)
 
     plt.xlabel("Modularity (m)")
     plt.ylabel("Minimum Cost (Log Scale)")
@@ -75,7 +98,9 @@ def plot_comparison_bar(data):
     plt.xticks(x, modularities)
     plt.yscale("log")
     plt.legend()
-    plt.grid(axis="y", linestyle="--", alpha=0.5, which="both")
+
+    current_ylim = plt.ylim()
+    plt.ylim(current_ylim[0], current_ylim[1] * 2)
 
     output_path = os.path.join("results", "comparison_bar.png")
     plt.savefig(output_path)
