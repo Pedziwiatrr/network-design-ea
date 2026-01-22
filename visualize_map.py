@@ -85,7 +85,7 @@ def visualize_network(file_path, chromosome, modularity):
     plt.tight_layout()
 
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
-    output_path = os.path.join(config.RESULTS_DIR, "map_visualization.png")
+    output_path = os.path.join(config.RESULTS_DIR, "plots", "map_visualization.png")
     plt.savefig(output_path, dpi=300)
     print(f"Map saved to {output_path}")
 
