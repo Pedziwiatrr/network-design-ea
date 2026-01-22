@@ -19,24 +19,36 @@ def main():
     parser.add_argument("--gens", type=int, default=100)
     parser.add_argument("--mutation_rate", type=float, default=0.5)
     parser.add_argument("--alpha", type=float, default=0.5)
+    parser.add_argument(
+        "--scenario",
+        type=str,
+        default="all",
+        choices=["all", "agg", "deagg"],
+    )
     args = parser.parse_args()
 
     try:
         network = SNDlibLoader.load(args.file)
         modularities = [1, 10, 100, 1000]
-        scenarios = [True, False]
+
+        if args.scenario == "agg":
+            scenarios = [True]
+        elif args.scenario == "deagg":
+            scenarios = [False]
+        else:
+            scenarios = [True, False]
 
         print(
-            f"REPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, ALPHA: {args.alpha}"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SCENARIO: {args.scenario}"
         )
-        print("\n" + "=" * 130)
+        print("=" * 130)
         print(
             f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<10} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
         )
-        print("-" * 130)
         results_data = []
 
         for agg in scenarios:
+            print("-" * 130)
             mode_label = "Aggregation" if agg else "Deaggregation"
             for m in modularities:
                 costs = []
@@ -81,18 +93,19 @@ def main():
                     f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
                     f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.4f}s ({np.sum(times):.2f}s total)"
                 )
-            print("-" * 130)
 
         print("=" * 130)
 
         os.makedirs("results", exist_ok=True)
-        with open("results/results.json", "w") as fh:
+        output_file = "results/results.json"
+
+        with open(output_file, "w") as fh:
             json.dump(results_data, fh, indent=4)
-        print("Results saved to results/results.json")
+        print(f"Results saved to {output_file}")
 
         global_end_time = time.time()
         print(
-            f"\nTotal execution time: {global_end_time - global_start_time:.2f} seconds"
+            f"Total execution time: {global_end_time - global_start_time:.2f} seconds"
         )
 
     except Exception as e:
