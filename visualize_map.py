@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import os
+import argparse
 import numpy as np
 from src.loader import SNDlibLoader
 from src.ea import EvoSolver
@@ -27,7 +28,7 @@ def calculate_link_loads(network, chromosome):
     return link_loads
 
 
-def visualize_network(file_path, chromosome):
+def visualize_network(file_path, chromosome, modularity):
     network = SNDlibLoader.load(file_path)
     link_loads = calculate_link_loads(network, chromosome)
 
@@ -78,7 +79,7 @@ def visualize_network(file_path, chromosome):
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.8),
     )
 
-    plt.title("Network traffic", fontsize=18)
+    plt.title(f"Network Traffic Load (m={modularity})", fontsize=14)
     plt.axis("off")
     plt.tight_layout()
 
@@ -91,23 +92,43 @@ def visualize_network(file_path, chromosome):
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_file = os.path.join(base_dir, "data", "polska.txt")
 
-    print("Generating solution...")
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--file", type=str, default=os.path.join(base_dir, "data", "polska.txt")
+    )
+    parser.add_argument("--modularity", type=float, default=10)
+    parser.add_argument("--pop", type=int, default=200)
+    parser.add_argument("--gens", type=int, default=50)
+    parser.add_argument("--mutation_rate", type=float, default=0.4)
+    parser.add_argument("--alpha", type=float, default=0.5)
+    parser.add_argument(
+        "--deagg",
+        action="store_true",
+    )
+    args = parser.parse_args()
+
+    is_aggregation = not args.deagg
+    mode_name = "Deaggregation" if args.deagg else "Aggregation"
+
+    print(
+        f"MODULARITY: {args.modularity}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {mode_name}"
+    )
 
     loader = SNDlibLoader()
-    network = loader.load(data_file)
+    network = loader.load(args.file)
 
     solver = EvoSolver(
         network,
-        modularity=10,
-        aggregation=True,
-        pop_size=200,
-        generations=50,
-        mutation_rate=0.4,
+        modularity=args.modularity,
+        aggregation=is_aggregation,
+        pop_size=args.pop,
+        generations=args.gens,
+        mutation_rate=args.mutation_rate,
+        alpha=args.alpha,
     )
 
     best_chromosome, best_cost, _, _ = solver.run()
 
     print(f"Best Cost found: {best_cost}")
-    visualize_network(data_file, best_chromosome)
+    visualize_network(args.file, best_chromosome, args.modularity)
