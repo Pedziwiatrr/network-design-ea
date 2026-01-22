@@ -1,5 +1,7 @@
 # Network Design using Evolutionary Algorithm
 
+![kacper_simonek](results/plots/kacper_siemionek.png)
+
 ## Authors
 
 - Michał Pędziwiatr
