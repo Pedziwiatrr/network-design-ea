@@ -107,8 +107,43 @@ def plot_comparison_bar(data):
     print(f"Saved: {output_path}")
 
 
+def plot_time_complexity(data):
+    plt.figure(figsize=(10, 6))
+
+    modes = ["Aggregation", "Deaggregation"]
+    modularities = sorted(list(set(d["modularity"] for d in data)))
+
+    for mode in modes:
+        times = []
+        for m in modularities:
+            val = next(
+                (
+                    d["avg_time"]
+                    for d in data
+                    if d["mode"] == mode and d["modularity"] == m
+                ),
+                0,
+            )
+            times.append(val)
+
+        plt.plot(modularities, times, marker="o", linewidth=2, label=mode)
+
+    plt.title("Computational Time vs Modularity")
+    plt.xlabel("Modularity (m)")
+    plt.ylabel("Average Time (seconds)")
+    plt.xscale("log")
+    plt.xticks(modularities, modularities)
+    plt.grid(True, linestyle="--", alpha=0.7)
+    plt.legend()
+
+    output_path = os.path.join("results", "time_plot.png")
+    plt.savefig(output_path)
+    print(f"Saved: {output_path}")
+
+
 if __name__ == "__main__":
     data = load_results()
     if data:
         plot_convergence(data, target_modularity=10)
         plot_comparison_bar(data)
+        plot_time_complexity(data)
