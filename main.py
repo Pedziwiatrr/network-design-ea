@@ -13,7 +13,8 @@ def main():
     global_start_time = time.time()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--file", type=str, default=config.DATA_FILE)
+    parser.add_argument("--input_file", type=str, default=config.DATA_FILE)
+    parser.add_argument("--output_file", type=str, default=config.DEFAULT_OUTPUT_FILE)
     parser.add_argument("--repeats", type=int, default=config.DEFAULT_REPEATS)
     parser.add_argument("--pop", type=int, default=config.DEFAULT_POP_SIZE)
     parser.add_argument("--gens", type=int, default=config.DEFAULT_GENERATIONS)
@@ -48,7 +49,7 @@ def main():
             random.seed(args.seed)
             print(f"Running with SEED: {args.seed}")
 
-        network = SNDlibLoader.load(args.file)
+        network = SNDlibLoader.load(args.input_file)
         modularities = args.modularities
 
         if args.mode == "agg":
@@ -129,11 +130,13 @@ def main():
         print("=" * 130)
 
         os.makedirs(config.RESULTS_DIR, exist_ok=True)
-        output_file = os.path.join(config.RESULTS_DIR, "results.json")
+        final_path = os.path.join(config.RESULTS_DIR, args.output_file)
+        if not final_path.endswith(".json"):
+            final_path += ".json"
 
-        with open(output_file, "w") as fh:
+        with open(final_path, "w") as fh:
             json.dump(results_data, fh, indent=4)
-        print(f"Results saved to {output_file}")
+        print(f"Results saved to {final_path}")
 
         global_end_time = time.time()
         print(
