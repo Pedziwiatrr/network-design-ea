@@ -32,11 +32,17 @@ def main():
     parser.add_argument(
         "--no_elitism", action="store_true", default=not config.DEFAULT_ELITISM
     )
+    parser.add_argument(
+        "--modularities",
+        nargs="+",
+        type=float,
+        default=config.DEFAULT_MODULARITIES,
+    )
     args = parser.parse_args()
 
     try:
         network = SNDlibLoader.load(args.file)
-        modularities = config.DEFAULT_MODULARITIES
+        modularities = args.modularities
 
         if args.mode == "agg":
             modes = [True]
