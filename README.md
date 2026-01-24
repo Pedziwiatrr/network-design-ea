@@ -2,6 +2,8 @@
 
 ![kacper_simonek](results/plots/kacper_siemionek.png)
 
+![siemionek_kacper](results/plots/siemionek_kacper.png)
+
 ## Authors
 
 - Michał Pędziwiatr
