@@ -31,7 +31,9 @@ def main():
     parser.add_argument(
         "--no_heuristic", action="store_true", default=not config.DEFAULT_USE_HEURISTIC
     )
-    parser.add_argument("--heuristic_ratio", type=float, default=0.2)
+    parser.add_argument(
+        "--heuristic_ratio", type=float, default=config.DEFAULT_HEURISTIC_RATIO
+    )
     parser.add_argument(
         "--no_elitism", action="store_true", default=not config.DEFAULT_ELITISM
     )
