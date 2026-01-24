@@ -2,14 +2,20 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import argparse
 
 
-def load_results(filename="results/results.json"):
+def load_results(filename):
     if not os.path.exists(filename):
         print(f"File {filename} not found.")
         return []
     with open(filename, "r") as f:
         return json.load(f)
+
+
+def ensure_plot_dir(directory="results/plots"):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 
 def plot_convergence(data, target_modularity=10):
@@ -34,6 +40,7 @@ def plot_convergence(data, target_modularity=10):
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
 
+    ensure_plot_dir()
     output_path = os.path.join("results/plots", "convergence_plot.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
@@ -44,6 +51,10 @@ def plot_comparison_bar(data):
         return
 
     modes = ["Aggregation", "Deaggregation"]
+    if not data:
+        print("No data to plot.")
+        return
+
     modularities = sorted(list(set(d["modularity"] for d in data)))
 
     agg_costs = []
@@ -79,15 +90,16 @@ def plot_comparison_bar(data):
     def autolabel(rects):
         for rect in rects:
             height = rect.get_height()
-            plt.text(
-                rect.get_x() + rect.get_width() / 2.0,
-                height,
-                f"{int(height)}",
-                ha="center",
-                va="bottom",
-                fontsize=9,
-                fontweight="bold",
-            )
+            if height > 0:
+                plt.text(
+                    rect.get_x() + rect.get_width() / 2.0,
+                    height,
+                    f"{int(height)}",
+                    ha="center",
+                    va="bottom",
+                    fontsize=9,
+                    fontweight="bold",
+                )
 
     autolabel(rects1)
     autolabel(rects2)
@@ -102,6 +114,7 @@ def plot_comparison_bar(data):
     current_ylim = plt.ylim()
     plt.ylim(current_ylim[0], current_ylim[1] * 2)
 
+    ensure_plot_dir()
     output_path = os.path.join("results/plots", "comparison_bar.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
@@ -111,6 +124,8 @@ def plot_time_complexity(data):
     plt.figure(figsize=(10, 6))
 
     modes = ["Aggregation", "Deaggregation"]
+    if not data:
+        return
     modularities = sorted(list(set(d["modularity"] for d in data)))
 
     for mode in modes:
@@ -136,13 +151,22 @@ def plot_time_complexity(data):
     plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
 
+    ensure_plot_dir()
     output_path = os.path.join("results/plots", "time_plot.png")
     plt.savefig(output_path)
     print(f"Saved: {output_path}")
 
 
 if __name__ == "__main__":
-    data = load_results()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--file",
+        type=str,
+        default="results/results.json",
+    )
+    args = parser.parse_args()
+
+    data = load_results(args.file)
     if data:
         plot_convergence(data, target_modularity=10)
         plot_comparison_bar(data)
