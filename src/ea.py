@@ -154,11 +154,13 @@ class EvoSolver:
                 best_chromosome = deepcopy(self.population[min_idx])
                 last_improvement_gen = gen
                 stagnation_counter = 0
-                sigma = self.base_sigma
+                sigma *= 0.95
             else:
                 stagnation_counter += 1
                 if stagnation_counter and stagnation_counter % 5 == 0:
-                    sigma = min(sigma * 1.5, 1.0)
+                    sigma *= 1.2
+
+            sigma = np.clip(sigma, 0.01, 0.5)
 
             best_costs_history.append(best_global_cost)
 
