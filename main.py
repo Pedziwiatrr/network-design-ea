@@ -105,7 +105,7 @@ def main():
                 )
 
                 print(
-                    f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<10.2f} | "
+                    f"{mode_label:<15} | {m:<15} | {np.min(costs):<12} | {np.mean(costs):<12.2f} | "
                     f"{np.std(costs):<10.2f} | {np.mean(gens):<20.1f} | {np.mean(times):.2f}s ({np.sum(times):.2f}s total)"
                 )
 
