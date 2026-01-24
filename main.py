@@ -52,9 +52,6 @@ def main():
         if seed is None:
             seed = random.randint(0, 20041202)
 
-        np.random.seed(seed)
-        random.seed(seed)
-
         network = SNDlibLoader.load(args.input_file)
         modularities = args.modularities
 
@@ -87,6 +84,9 @@ def main():
                 best_cost_overall = float("inf")
 
                 for _ in range(args.repeats):
+                    np.random.seed(seed)
+                    random.seed(seed)
+
                     solver = EvoSolver(
                         network,
                         modularity=m,
