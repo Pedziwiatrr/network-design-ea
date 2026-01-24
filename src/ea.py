@@ -16,6 +16,7 @@ class EvoSolver:
         mutation_rate: float = 0.1,
         alpha: float = 0.5,
         use_heuristic: bool = True,
+        elitism: bool = True,
     ):
         self.network = network
         self.modularity = modularity
@@ -27,6 +28,7 @@ class EvoSolver:
         self.population = []
         self.demand_ids = list(network.demands.keys())
         self.use_heuristic = use_heuristic
+        self.elitism = elitism
 
     def get_link_loads(self, individual):
         """
@@ -151,7 +153,10 @@ class EvoSolver:
 
             best_costs_history.append(best_global_cost)
 
-            new_population = [deepcopy(self.population[min_idx])]
+            new_population = []
+
+            if self.elitism:
+                new_population.append(deepcopy(self.population[min_idx]))
 
             while len(new_population) < self.pop_size:
                 parent1 = self.selection(scores)

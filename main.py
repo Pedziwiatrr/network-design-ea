@@ -29,6 +29,9 @@ def main():
     parser.add_argument(
         "--no_heuristic", action="store_true", default=not config.DEFAULT_USE_HEURISTIC
     )
+    parser.add_argument(
+        "--no_elitism", action="store_true", default=not config.DEFAULT_ELITISM
+    )
     args = parser.parse_args()
 
     try:
@@ -43,7 +46,7 @@ def main():
             modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}\n"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}\n"
         )
         print("=" * 130)
         print(
@@ -73,6 +76,7 @@ def main():
                         mutation_rate=args.mutation_rate,
                         alpha=args.alpha,
                         use_heuristic=not args.no_heuristic,
+                        elitism=not args.no_elitism,
                     )
 
                     start_time = time.time()
