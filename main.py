@@ -44,10 +44,12 @@ def main():
     args = parser.parse_args()
 
     try:
-        if args.seed is not None:
-            np.random.seed(args.seed)
-            random.seed(args.seed)
-            print(f"Running with SEED: {args.seed}")
+        seed = args.seed
+        if seed is None:
+            seed = random.randint(0, 20041202)
+
+        np.random.seed(seed)
+        random.seed(seed)
 
         network = SNDlibLoader.load(args.input_file)
         modularities = args.modularities
@@ -60,7 +62,7 @@ def main():
             modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}\n"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, SEED: {seed}\n"
         )
         print("=" * 130)
         print(
