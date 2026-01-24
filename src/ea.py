@@ -2,6 +2,7 @@ import numpy as np
 import random
 import math
 from copy import deepcopy
+from src import config
 from .models import Network
 
 
@@ -124,10 +125,10 @@ class EvoSolver:
         """arithmetic crossover: descendant weights based on parent's weights linear combination"""
         return self.alpha * first + (1 - self.alpha) * second
 
-    def mutation(self, individual):
+    def mutation(self, individual, sigma):
         """gaussian mutation"""
         mask = np.random.rand(*individual.shape) < self.mutation_rate
-        noise = np.random.normal(0, 0.2, individual.shape)
+        noise = np.random.normal(0, sigma, individual.shape)
         individual[mask] += noise[mask]
         np.clip(individual, 0.0, 1.0, out=individual)
 
@@ -139,6 +140,7 @@ class EvoSolver:
         last_improvement_gen = 0
         best_costs_history = []
         best_chromosome = None
+        sigma = config.DEFAULT_SIGMA
 
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
@@ -150,6 +152,13 @@ class EvoSolver:
                 best_global_cost = min_cost
                 best_chromosome = deepcopy(self.population[min_idx])
                 last_improvement_gen = gen
+                stagnation_counter = 0
+                # Would like to make it as param later
+                sigma = config.DEFAULT_SIGMA
+            else:
+                stagnation_counter += 1
+                if stagnation_counter and stagnation_counter % 5 == 0:
+                    sigma = min(sigma * 1.5, 1.0)
 
             best_costs_history.append(best_global_cost)
 
@@ -163,7 +172,7 @@ class EvoSolver:
                 parent2 = self.selection(scores)
 
                 child = self.crossover(parent1, parent2)
-                self.mutation(child)
+                self.mutation(child, sigma)
 
                 new_population.append(child)
 
