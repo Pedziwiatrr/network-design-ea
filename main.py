@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import json
+import random
 import time
 import os
 from src.utils.loader import SNDlibLoader
@@ -38,9 +39,15 @@ def main():
         type=float,
         default=config.DEFAULT_MODULARITIES,
     )
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
     try:
+        if args.seed is not None:
+            np.random.seed(args.seed)
+            random.seed(args.seed)
+            print(f"Running with SEED: {args.seed}")
+
         network = SNDlibLoader.load(args.file)
         modularities = args.modularities
 
