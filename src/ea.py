@@ -15,6 +15,7 @@ class EvoSolver:
         generations: int = 100,
         mutation_rate: float = 0.1,
         alpha: float = 0.5,
+        use_heuristic: bool = True,
     ):
         self.network = network
         self.modularity = modularity
@@ -25,6 +26,7 @@ class EvoSolver:
         self.alpha = alpha
         self.population = []
         self.demand_ids = list(network.demands.keys())
+        self.use_heuristic = use_heuristic
 
     def get_link_loads(self, individual):
         """
@@ -88,17 +90,21 @@ class EvoSolver:
             for demand_id in self.demand_ids
         )
 
-        # deterministic - 1 individual
-        deterministic_individual = np.zeros((num_demands, max_paths))
-        for i, demand_id in enumerate(self.demand_ids):
-            paths = self.network.demands[demand_id].admissable_paths
-            shortest_path_idx = np.argmin([len(p) for p in paths])
-            deterministic_individual[i, shortest_path_idx] = 1.0
+        non_deterministic_count = self.pop_size
 
-        self.population.append(deterministic_individual)
+        # deterministic - 1 individual
+        if self.use_heuristic:
+            deterministic_individual = np.zeros((num_demands, max_paths))
+            for i, demand_id in enumerate(self.demand_ids):
+                paths = self.network.demands[demand_id].admissable_paths
+                shortest_path_idx = np.argmin([len(p) for p in paths])
+                deterministic_individual[i, shortest_path_idx] = 1.0
+
+            self.population.append(deterministic_individual)
+            non_deterministic_count -= 1
 
         # random - the rest
-        for i in range(self.pop_size - 1):
+        for i in range(non_deterministic_count):
             random_individual = np.random.rand(num_demands, max_paths)
             self.population.append(random_individual)
 
