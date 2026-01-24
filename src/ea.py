@@ -119,7 +119,7 @@ class EvoSolver:
             if scores[idx] < scores[best_idx]:
                 best_idx = idx
 
-        return deepcopy(self.population[best_idx])
+        return self.population[best_idx]
 
     def crossover(self, first, second):
         """arithmetic crossover: descendant weights based on parent's weights linear combination"""
