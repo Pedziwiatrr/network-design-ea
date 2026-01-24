@@ -41,6 +41,7 @@ def main():
         default=config.DEFAULT_MODULARITIES,
     )
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--sigma", type=float, default=config.DEFAULT_SIGMA)
     args = parser.parse_args()
 
     try:
@@ -91,6 +92,7 @@ def main():
                         generations=args.gens,
                         mutation_rate=args.mutation_rate,
                         alpha=args.alpha,
+                        sigma=args.sigma,
                         use_heuristic=not args.no_heuristic,
                         elitism=not args.no_elitism,
                     )

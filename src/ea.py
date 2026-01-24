@@ -2,7 +2,6 @@ import numpy as np
 import random
 import math
 from copy import deepcopy
-from src import config
 from .models import Network
 
 
@@ -16,6 +15,7 @@ class EvoSolver:
         generations: int = 100,
         mutation_rate: float = 0.5,
         alpha: float = 0.5,
+        sigma: float = 0.2,
         use_heuristic: bool = True,
         elitism: bool = True,
     ):
@@ -30,6 +30,7 @@ class EvoSolver:
         self.demand_ids = list(network.demands.keys())
         self.use_heuristic = use_heuristic
         self.elitism = elitism
+        self.base_sigma = sigma
 
     def get_link_loads(self, individual):
         """
@@ -140,7 +141,7 @@ class EvoSolver:
         last_improvement_gen = 0
         best_costs_history = []
         best_chromosome = None
-        sigma = config.DEFAULT_SIGMA
+        sigma = self.base_sigma
 
         for gen in range(self.generations):
             scores = [self.calculate_cost(individual) for individual in self.population]
@@ -153,8 +154,7 @@ class EvoSolver:
                 best_chromosome = deepcopy(self.population[min_idx])
                 last_improvement_gen = gen
                 stagnation_counter = 0
-                # Would like to make it as param later
-                sigma = config.DEFAULT_SIGMA
+                sigma = self.base_sigma
             else:
                 stagnation_counter += 1
                 if stagnation_counter and stagnation_counter % 5 == 0:
