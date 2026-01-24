@@ -14,7 +14,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_file", type=str, default=config.DATA_FILE)
-    parser.add_argument("--output_file", type=str, default=config.DEFAULT_OUTPUT_FILE)
+    parser.add_argument("--output_file", type=str, default=config.DEFAULT_OUTPUT_NAME)
     parser.add_argument("--repeats", type=int, default=config.DEFAULT_REPEATS)
     parser.add_argument("--pop", type=int, default=config.DEFAULT_POP_SIZE)
     parser.add_argument("--gens", type=int, default=config.DEFAULT_GENERATIONS)
