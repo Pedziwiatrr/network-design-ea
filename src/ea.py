@@ -17,6 +17,7 @@ class EvoSolver:
         alpha: float = 0.5,
         sigma: float = 0.2,
         use_heuristic: bool = True,
+        heuristic_ratio: float = 0.2,
         elitism: bool = True,
     ):
         self.network = network
@@ -31,6 +32,7 @@ class EvoSolver:
         self.use_heuristic = use_heuristic
         self.elitism = elitism
         self.base_sigma = sigma
+        self.heuristic_ratio = heuristic_ratio
 
     def get_link_loads(self, individual):
         """
@@ -94,8 +96,7 @@ class EvoSolver:
             for demand_id in self.demand_ids
         )
 
-        non_deterministic_count = self.pop_size
-
+        remaining_slots = self.pop_size
         # deterministic - 1 individual
         if self.use_heuristic:
             deterministic_individual = np.zeros((num_demands, max_paths))
@@ -105,12 +106,27 @@ class EvoSolver:
                 deterministic_individual[i, shortest_path_idx] = 1.0
 
             self.population.append(deterministic_individual)
-            non_deterministic_count -= 1
+            remaining_slots -= 1
 
-        # random - the rest
-        for i in range(non_deterministic_count):
-            random_individual = np.random.rand(num_demands, max_paths)
-            self.population.append(random_individual)
+            num_variants = int(remaining_slots * self.heuristic_ratio)
+            num_random = remaining_slots - num_variants
+
+            # other deterministic individuals (based on the first one)
+            # their count is specified by heuristic_ratio variable
+            for _ in range(num_variants):
+                variant = deepcopy(deterministic_individual)
+                self.mutation(variant, self.base_sigma)
+                self.population.append(variant)
+
+            # random - the rest
+            for _ in range(num_random):
+                random_individual = np.random.rand(num_demands, max_paths)
+                self.population.append(random_individual)
+        else:
+            # random - the rest
+            for _ in range(remaining_slots):
+                random_individual = np.random.rand(num_demands, max_paths)
+                self.population.append(random_individual)
 
     def selection(self, scores, k=3):
         """tournament selection"""
@@ -155,10 +171,12 @@ class EvoSolver:
                 last_improvement_gen = gen
                 stagnation_counter = 0
                 sigma *= 0.95
+                # print(f"[DEBUG] +sigma: {sigma}")
             else:
                 stagnation_counter += 1
                 if stagnation_counter and stagnation_counter % 5 == 0:
                     sigma *= 1.2
+                    # print(f"[DEBUG] -sigma: {sigma}")
 
             sigma = np.clip(sigma, 0.01, 0.5)
 
