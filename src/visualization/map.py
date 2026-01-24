@@ -18,14 +18,23 @@ def calculate_link_loads(network, chromosome):
         paths = demand.admissable_paths
 
         if len(chromosome.shape) > 1:
-            path_idx = np.argmax(chromosome[i])
+            weights = chromosome[i]
+
+            total_w = np.sum(weights)
+            if total_w > 0:
+                weights = weights / total_w
+
+            for p_idx, path in enumerate(paths):
+                flow = demand.value * weights[p_idx]
+                if flow > 0:
+                    for link_id in path:
+                        link_loads[link_id] += flow
         else:
             path_idx = int(chromosome[i])
-
-        if path_idx < len(paths):
-            selected_path = paths[path_idx]
-            for link_id in selected_path:
-                link_loads[link_id] += demand.value
+            if path_idx < len(paths):
+                selected_path = paths[path_idx]
+                for link_id in selected_path:
+                    link_loads[link_id] += demand.value
 
     return link_loads
 
@@ -51,6 +60,7 @@ def visualize_network(file_path, chromosome, modularity):
 
     for link in network.links.values():
         load = link_loads[link.id]
+
         if load > 0:
             G.add_edge(link.source, link.target)
             edges.append((link.source, link.target))
@@ -64,7 +74,6 @@ def visualize_network(file_path, chromosome, modularity):
     if os.path.exists(img_path):
         try:
             img = mpimg.imread(img_path)
-
             min_x, max_x = min(xs), max(xs)
             min_y, max_y = min(ys), max(ys)
 
@@ -77,8 +86,7 @@ def visualize_network(file_path, chromosome, modularity):
                 min_y - margin_y,
                 max_y + margin_y,
             ]
-
-            plt.imshow(img, extent=extent, aspect="auto", alpha=0.3)
+            plt.imshow(img, extent=extent, aspect="auto", alpha=0.3, zorder=0)
         except Exception as e:
             print(f"Could not load background image: {e}")
 
@@ -103,17 +111,20 @@ def visualize_network(file_path, chromosome, modularity):
         G,
         pos,
         edge_labels=edge_labels,
-        font_size=12,
+        font_size=10,
         font_color="black",
-        bbox=dict(facecolor="white", edgecolor="none", alpha=0.8),
+        rotate=False,
+        bbox=dict(facecolor="white", edgecolor="none", alpha=0.7),
     )
 
-    plt.title(f"Network Traffic Load (m={modularity})", fontsize=14)
+    plt.title(f"Network Traffic Load (m={modularity})", fontsize=16)
     plt.axis("off")
     plt.tight_layout()
 
-    os.makedirs(config.RESULTS_DIR, exist_ok=True)
-    output_path = os.path.join(config.RESULTS_DIR, "plots", "map_visualization.png")
+    plots_dir = os.path.join(config.RESULTS_DIR, "plots")
+    os.makedirs(plots_dir, exist_ok=True)
+    output_path = os.path.join(plots_dir, "map_visualization.png")
+
     plt.savefig(output_path, dpi=300)
     print(f"Map saved to {output_path}")
 
@@ -135,7 +146,7 @@ if __name__ == "__main__":
     mode_name = "Deaggregation" if args.deagg else "Aggregation"
 
     print(
-        f"MODULARITY: {args.modularity}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, MODE: {mode_name}"
+        f"RUNNING MAP GENERATOR...\nMODULARITY: {args.modularity}, MODE: {mode_name}\n"
     )
 
     loader = SNDlibLoader()
