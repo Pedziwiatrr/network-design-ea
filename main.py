@@ -31,6 +31,7 @@ def main():
     parser.add_argument(
         "--no_heuristic", action="store_true", default=not config.DEFAULT_USE_HEURISTIC
     )
+    parser.add_argument("--heuristic_ratio", type=float, default=0.2)
     parser.add_argument(
         "--no_elitism", action="store_true", default=not config.DEFAULT_ELITISM
     )
@@ -63,7 +64,7 @@ def main():
             modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma} MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, SEED: {seed}\n"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma}, HEURISTIC_RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, SEED: {seed}\n"
         )
         print("=" * 130)
         print(
@@ -94,6 +95,7 @@ def main():
                         alpha=args.alpha,
                         sigma=args.sigma,
                         use_heuristic=not args.no_heuristic,
+                        heuristic_ratio=args.heuristic_ratio,
                         elitism=not args.no_elitism,
                     )
 
