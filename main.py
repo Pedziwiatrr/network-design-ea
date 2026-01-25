@@ -63,7 +63,7 @@ def main():
             modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma}, HEURISTIC_RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, SEED: {seed}\n"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma},\nHEURISTIC_RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, STARTING SEED: {seed}\n"
         )
         print("=" * 130)
         print(
@@ -86,6 +86,7 @@ def main():
                 for _ in range(args.repeats):
                     np.random.seed(seed)
                     random.seed(seed)
+                    seed += 1
 
                     solver = EvoSolver(
                         network,
