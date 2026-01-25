@@ -69,9 +69,9 @@ def main():
             f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma},"
         )
         print(
-            f"HEURISTIC RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, STARTING SEED: {seed}"
+            f"HEURISTIC RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, STARTING SEED: {seed}, TORUNAMENT SIZE: {args.tournament_size}"
         )
-        print(f"TORUNAMENT SIZE: {args.tournament_size}")
+        print(f"STARTING SEED: {seed}")
         print("\n" + "=" * 130)
         print(
             f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
