@@ -3,23 +3,24 @@ import random
 import math
 from copy import deepcopy
 from .models import Network
+from src import config
 
 
 class EvoSolver:
     def __init__(
         self,
         network: Network,
-        modularity: float = 1.0,
+        modularity: float = config.DEFAULT_MODULARITIES[0],
         aggregation: bool = True,
-        pop_size: int = 300,
-        generations: int = 100,
-        mutation_rate: float = 0.5,
-        alpha: float = 0.5,
-        sigma: float = 0.2,
-        use_heuristic: bool = True,
-        heuristic_ratio: float = 0.2,
-        elitism: bool = True,
-        tournament_size: int = 50,
+        pop_size: int = config.DEFAULT_POP_SIZE,
+        generations: int = config.DEFAULT_GENERATIONS,
+        mutation_rate: float = config.DEFAULT_MUTATION_RATE,
+        alpha: float = config.DEFAULT_ALPHA,
+        sigma: float = config.DEFAULT_SIGMA,
+        use_heuristic: bool = config.DEFAULT_ELITISM,
+        heuristic_ratio: float = config.DEFAULT_HEURISTIC_RATIO,
+        elitism: bool = config.DEFAULT_ELITISM,
+        tournament_size: int = config.DEFAULT_TOURNAMENT_SIZE,
     ):
         self.network = network
         self.modularity = modularity
