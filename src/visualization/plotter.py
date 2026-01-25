@@ -18,41 +18,57 @@ def ensure_plot_dir(directory="results/plots"):
         os.makedirs(directory)
 
 
-def plot_convergence(data, target_modularity=10):
-    plt.figure(figsize=(10, 6))
+def plot_convergence(data):
+    modularities = sorted(list(set(d["modularity"] for d in data)))
 
-    subset = [d for d in data if d["modularity"] == target_modularity]
-
-    if not subset:
-        print(f"No data found for modularity {target_modularity}")
+    if not modularities:
+        print("No data found to plot convergence.")
         return
 
-    for item in subset:
-        plt.plot(
-            item["histories"],
-            label=f"{item['mode']} (m={target_modularity})",
-            linewidth=2,
-        )
+    num_plots = len(modularities)
+    cols = 2
+    rows = (num_plots + 1) // 2
 
-    plt.title(f"Convergence (Cost vs Generation) for m={target_modularity}")
-    plt.xlabel("Generation")
-    plt.ylabel("Best Cost")
-    plt.grid(True, linestyle="--", alpha=0.7)
-    plt.legend()
+    fig, axes = plt.subplots(rows, cols, figsize=(14, 5 * rows))
+
+    if num_plots > 1:
+        axes_flat = axes.flatten()
+    else:
+        axes_flat = [axes]
 
     ensure_plot_dir()
-    output_path = os.path.join("results/plots", "convergence_plot.png")
+
+    for i, m in enumerate(modularities):
+        ax = axes_flat[i]
+        subset = [d for d in data if d["modularity"] == m]
+
+        subset.sort(key=lambda x: x["mode"])
+
+        for item in subset:
+            ax.plot(
+                item["histories"],
+                label=f"{item['mode']}",
+                linewidth=2,
+            )
+
+        ax.set_title(f"Convergence (m={int(m)})")
+        ax.set_xlabel("Generation")
+        ax.set_ylabel("Best Cost")
+        ax.grid(True, linestyle="--", alpha=0.7)
+        ax.legend()
+
+    for j in range(num_plots, len(axes_flat)):
+        fig.delaxes(axes_flat[j])
+
+    plt.tight_layout()
+    output_path = os.path.join("results/plots", "convergence_all.png")
     plt.savefig(output_path)
+    plt.close()
     print(f"Saved: {output_path}")
 
 
 def plot_comparison_bar(data):
     if not data:
-        return
-
-    modes = ["Aggregation", "Deaggregation"]
-    if not data:
-        print("No data to plot.")
         return
 
     modularities = sorted(list(set(d["modularity"] for d in data)))
@@ -117,6 +133,7 @@ def plot_comparison_bar(data):
     ensure_plot_dir()
     output_path = os.path.join("results/plots", "comparison_bar.png")
     plt.savefig(output_path)
+    plt.close()
     print(f"Saved: {output_path}")
 
 
@@ -154,6 +171,7 @@ def plot_time_complexity(data):
     ensure_plot_dir()
     output_path = os.path.join("results/plots", "time_plot.png")
     plt.savefig(output_path)
+    plt.close()
     print(f"Saved: {output_path}")
 
 
@@ -168,6 +186,6 @@ if __name__ == "__main__":
 
     data = load_results(args.file)
     if data:
-        plot_convergence(data, target_modularity=10)
+        plot_convergence(data)
         plot_comparison_bar(data)
         plot_time_complexity(data)
