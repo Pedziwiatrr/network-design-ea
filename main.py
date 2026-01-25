@@ -51,9 +51,9 @@ def main():
     args = parser.parse_args()
 
     try:
-        seed = args.seed
-        if seed is None:
-            seed = random.randint(0, 20041202)
+        base_seed = args.seed
+        if args.seed is None:
+            base_seed = random.randint(0, 20041202)
 
         network = SNDlibLoader.load(args.input_file)
         modularities = args.modularities
@@ -71,7 +71,7 @@ def main():
         print(
             f"HEURISTIC RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, TOURNAMENT SIZE: {args.tournament_size}"
         )
-        print(f"STARTING SEED: {seed}")
+        print(f"STARTING SEED: {base_seed}")
         print("\n" + "=" * 130)
         print(
             f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
@@ -82,6 +82,7 @@ def main():
             print("-" * 130)
             mode_label = "Aggregation" if agg else "Deaggregation"
             for m in modularities:
+                seed = base_seed
                 costs = []
                 gens = []
                 histories = []
