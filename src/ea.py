@@ -19,6 +19,7 @@ class EvoSolver:
         use_heuristic: bool = True,
         heuristic_ratio: float = 0.2,
         elitism: bool = True,
+        tournament_size: int = 50,
     ):
         self.network = network
         self.modularity = modularity
@@ -33,6 +34,7 @@ class EvoSolver:
         self.elitism = elitism
         self.base_sigma = sigma
         self.heuristic_ratio = heuristic_ratio
+        self.tournament_size = tournament_size
 
     def get_link_loads(self, individual):
         """
@@ -128,9 +130,9 @@ class EvoSolver:
                 random_individual = np.random.rand(num_demands, max_paths)
                 self.population.append(random_individual)
 
-    def selection(self, scores, k=3):
+    def selection(self, scores):
         """tournament selection"""
-        selected = random.sample(range(len(self.population)), k)
+        selected = random.sample(range(len(self.population)), self.tournament_size)
         best_idx = selected[0]
         for idx in selected:
             if scores[idx] < scores[best_idx]:
@@ -170,13 +172,14 @@ class EvoSolver:
                 best_chromosome = deepcopy(self.population[min_idx])
                 last_improvement_gen = gen
                 stagnation_counter = 0
-                sigma *= 0.9
+                # sigma *= 0.9
                 # print(f"[DEBUG] -sigma: {sigma}")
             else:
                 stagnation_counter += 1
                 if stagnation_counter and stagnation_counter % 5 == 0:
-                    sigma *= 1.2
+                    # sigma *= 1.2
                     # print(f"[DEBUG] +sigma: {sigma}")
+                    pass
 
             sigma = np.clip(sigma, 0.0005, 1)
 
