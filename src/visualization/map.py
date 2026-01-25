@@ -86,7 +86,7 @@ def visualize_network(file_path, chromosome, modularity):
                 min_y - margin_y,
                 max_y + margin_y,
             ]
-            plt.imshow(img, extent=extent, aspect="auto", alpha=0.3, zorder=0)
+            plt.imshow(img, extent=extent, aspect="auto", alpha=0.6, zorder=0)
         except Exception as e:
             print(f"Could not load background image: {e}")
 
