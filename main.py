@@ -43,6 +43,9 @@ def main():
         type=float,
         default=config.DEFAULT_MODULARITIES,
     )
+    parser.add_argument(
+        "--tournament_size", type=int, default=config.DEFAULT_TOURNAMENT_SIZE
+    )
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--sigma", type=float, default=config.DEFAULT_SIGMA)
     args = parser.parse_args()
@@ -63,9 +66,13 @@ def main():
             modes = [True, False]
 
         print(
-            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma},\nHEURISTIC_RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, STARTING SEED: {seed}\n"
+            f"\nREPEATS: {args.repeats}, POPULATION SIZE: {args.pop}, GENERATION COUNT: {args.gens}, MUTATION RATE: {args.mutation_rate}, SIGMA: {args.sigma},"
         )
-        print("=" * 130)
+        print(
+            f"HEURISTIC RATIO: {args.heuristic_ratio}, MODE: {args.mode}, HEURISTIC: {not args.no_heuristic}, ELITISM: {not args.no_elitism}, STARTING SEED: {seed}"
+        )
+        print(f"TORUNAMENT SIZE: {args.tournament_size}")
+        print("\n" + "=" * 130)
         print(
             f"{'Mode':<15} | {'Modularity':<15} | {'Best':<12} | {'Mean':<12} | {'Std Dev':<10} | {'Convergence Gen':<20} | {'Avg Time':<10}"
         )
@@ -100,6 +107,7 @@ def main():
                         use_heuristic=not args.no_heuristic,
                         heuristic_ratio=args.heuristic_ratio,
                         elitism=not args.no_elitism,
+                        tournament_size=args.tournament_size,
                     )
 
                     start_time = time.time()
