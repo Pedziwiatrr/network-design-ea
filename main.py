@@ -12,42 +12,102 @@ from src import config
 def main():
     global_start_time = time.time()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", type=str, default=config.DATA_FILE)
-    parser.add_argument("--output_file", type=str, default=config.DEFAULT_OUTPUT_NAME)
-    parser.add_argument("--repeats", type=int, default=config.DEFAULT_REPEATS)
-    parser.add_argument("--pop", type=int, default=config.DEFAULT_POP_SIZE)
-    parser.add_argument("--gens", type=int, default=config.DEFAULT_GENERATIONS)
-    parser.add_argument(
-        "--mutation_rate", type=float, default=config.DEFAULT_MUTATION_RATE
+    parser = argparse.ArgumentParser(
+        description="Evolutionary Algorithm for Network Design Problem",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--alpha", type=float, default=config.DEFAULT_ALPHA)
+    parser.add_argument(
+        "--input_file",
+        type=str,
+        default=config.DATA_FILE,
+        help="Path to the input network data file.",
+    )
+    parser.add_argument(
+        "--output_file",
+        type=str,
+        default=config.DEFAULT_OUTPUT_NAME,
+        help="Filename for the JSON results file.",
+    )
+    parser.add_argument(
+        "--repeats",
+        type=int,
+        default=config.DEFAULT_REPEATS,
+        help="Number of times to repeat the simulation for each configuration.",
+    )
+    parser.add_argument(
+        "--pop",
+        type=int,
+        default=config.DEFAULT_POP_SIZE,
+        help="Size of the population in each generation.",
+    )
+    parser.add_argument(
+        "--gens",
+        type=int,
+        default=config.DEFAULT_GENERATIONS,
+        help="Total number of generations to evolve.",
+    )
+    parser.add_argument(
+        "--mutation_rate",
+        type=float,
+        default=config.DEFAULT_MUTATION_RATE,
+        help="Probability of mutation for each gene.",
+    )
+    parser.add_argument(
+        "--alpha",
+        type=float,
+        default=config.DEFAULT_ALPHA,
+        help="Crossover weighting factor (0.0-1.0).",
+    )
     parser.add_argument(
         "--mode",
         type=str,
         default="all",
         choices=["all", "agg", "deagg"],
+        help="Simulation mode: 'agg' (aggregation), 'deagg' (deaggregation), or 'all' (both).",
     )
     parser.add_argument(
-        "--no_heuristic", action="store_true", default=not config.DEFAULT_USE_HEURISTIC
+        "--no_heuristic",
+        action="store_true",
+        default=not config.DEFAULT_USE_HEURISTIC,
+        help="Disable initialization with heuristic solutions.",
     )
     parser.add_argument(
-        "--heuristic_ratio", type=float, default=config.DEFAULT_HEURISTIC_RATIO
+        "--heuristic_ratio",
+        type=float,
+        default=config.DEFAULT_HEURISTIC_RATIO,
+        help="Ratio of the population initialized using heuristics (deterministic individual variants).",
     )
     parser.add_argument(
-        "--no_elitism", action="store_true", default=not config.DEFAULT_ELITISM
+        "--no_elitism",
+        action="store_true",
+        default=not config.DEFAULT_ELITISM,
+        help="Disable elitism (keeping the best individual).",
     )
     parser.add_argument(
         "--modularities",
         nargs="+",
         type=float,
         default=config.DEFAULT_MODULARITIES,
+        help="List of modularity values to test.",
     )
     parser.add_argument(
-        "--tournament_size", type=int, default=config.DEFAULT_TOURNAMENT_SIZE
+        "--tournament_size",
+        type=int,
+        default=config.DEFAULT_TOURNAMENT_SIZE,
+        help="Size of every tournament for selection.",
     )
-    parser.add_argument("--seed", type=int, default=None)
-    parser.add_argument("--sigma", type=float, default=config.DEFAULT_SIGMA)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Starting seed for random number generation (it will increment by 1 every simulation repetition).",
+    )
+    parser.add_argument(
+        "--sigma",
+        type=float,
+        default=config.DEFAULT_SIGMA,
+        help="Initial standard deviation for Gaussian mutation.",
+    )
     args = parser.parse_args()
 
     try:
