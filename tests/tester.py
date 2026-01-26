@@ -1,12 +1,16 @@
 import os
 import argparse
 import numpy as np
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.utils.loader import SNDlibLoader
 from src.ea import EvoSolver
 
 
 def main():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     parser = argparse.ArgumentParser()
     parser.add_argument("--test_solver", action="store_true")
     parser.add_argument("--test_loading", action="store_true")
@@ -45,6 +49,7 @@ def main():
             print("\n" + "=" * 100)
             print("< Testing evolutionary solver functions >\n")
             solver = EvoSolver(network, modularity=1.0, aggregation=True)
+
             d_count = len(solver.demand_ids)
             k_max = max(len(d.admissable_paths) for d in network.demands.values())
 
@@ -61,14 +66,13 @@ def main():
 
             print("-" * 50)
             child = solver.crossover(ind1, ind2)
-            solver.mutation(child)
-            print(f"Mutated child created by crossover: {child}")
+            solver.mutation(child, sigma=0.2)
+            print(f"Mutated child created by crossover: Mean={np.mean(child):.4f}")
             # print(f"\nind1: {ind1}, \n\n ind2:{ind2}\n")
-
             print("-" * 50)
             print("Running full EA test (short):")
             solver.generations = 5
-            best_cost, last_improvement_gen = solver.run()
+            _, best_cost, last_improvement_gen, _ = solver.run()
             print(
                 f"Result: Cost {best_cost}, Last improvement in gen: {last_improvement_gen}"
             )
