@@ -20,4 +20,4 @@ DEFAULT_TOURNAMENT_SIZE = 8
 
 # META PARAMETERS
 DEFAULT_REPEATS = 10
-DEFAULT_MODULARITY = 10  # For visualization only
+DEFAULT_MODULARITY = 10  # used for map's visualization only
