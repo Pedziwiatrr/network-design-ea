@@ -10,7 +10,7 @@ from src.ea import EvoSolver
 from src import config
 
 
-def calculate_link_loads(network, chromosome):
+def calculate_link_loads(network, chromosome, is_aggregation):
     link_loads = {link.id: 0.0 for link in network.links.values()}
     demand_ids = sorted(network.demands.keys(), key=lambda x: int(x.split("_")[1]))
 
@@ -21,15 +21,23 @@ def calculate_link_loads(network, chromosome):
         if len(chromosome.shape) > 1:
             weights = chromosome[i]
 
-            total_w = np.sum(weights)
-            if total_w > 0:
-                weights = weights / total_w
+            if is_aggregation:
+                # Aggregation: Winner takes all
+                chosen_idx = np.argmax(weights)
+                if chosen_idx < len(paths):
+                    for link_id in paths[chosen_idx]:
+                        link_loads[link_id] += demand.value
+            else:
+                # Deaggregation: Proportional split
+                total_w = np.sum(weights)
+                if total_w > 0:
+                    weights = weights / total_w
 
-            for p_idx, path in enumerate(paths):
-                flow = demand.value * weights[p_idx]
-                if flow > 0:
-                    for link_id in path:
-                        link_loads[link_id] += flow
+                for p_idx, path in enumerate(paths):
+                    flow = demand.value * weights[p_idx]
+                    if flow > 0:
+                        for link_id in path:
+                            link_loads[link_id] += flow
         else:
             path_idx = int(chromosome[i])
             if path_idx < len(paths):
@@ -37,12 +45,14 @@ def calculate_link_loads(network, chromosome):
                 for link_id in selected_path:
                     link_loads[link_id] += demand.value
 
+    total_flow = sum(link_loads.values())
+    print(f"TOTAL FLOW: {total_flow}")
     return link_loads
 
 
-def visualize_network(file_path, chromosome, modularity):
+def visualize_network(file_path, chromosome, modularity, is_aggregation):
     network = SNDlibLoader.load(file_path)
-    link_loads = calculate_link_loads(network, chromosome)
+    link_loads = calculate_link_loads(network, chromosome, is_aggregation)
 
     G = nx.Graph()
 
@@ -171,4 +181,4 @@ if __name__ == "__main__":
     best_chromosome, best_cost, _, _ = solver.run()
 
     print(f"Best Cost found: {best_cost}")
-    visualize_network(args.file, best_chromosome, args.modularity)
+    visualize_network(args.file, best_chromosome, args.modularity, is_aggregation)
