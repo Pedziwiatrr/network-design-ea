@@ -4,6 +4,7 @@ import networkx as nx
 import os
 import argparse
 import numpy as np
+import random
 from src.utils.loader import SNDlibLoader
 from src.ea import EvoSolver
 from src import config
@@ -140,7 +141,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("--alpha", type=float, default=config.DEFAULT_ALPHA)
     parser.add_argument("--deagg", action="store_true")
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
+
+    if args.seed is not None:
+        random.seed(args.seed)
+        np.random.seed(args.seed)
 
     is_aggregation = not args.deagg
     mode_name = "Deaggregation" if args.deagg else "Aggregation"
