@@ -66,8 +66,4 @@ python3 tests/tester.py
 - **`src/visualization/plotter.py`, `src/visualization/map.py`** - Moduły odpowiedzialne za generowanie wykresów oraz wizualizację mapy sieci.
 - **`src/utils/loader.py`** - Parser formatu SNDlib wczytujący dane sieci z folderu `/data`.
 - **`src/utils/results_to_csv.py`** - Konwerter wyników działania algorytmu z JSON do csv.
-- **`tests/tester.py`** - Roboczy skrypt weryfikujący poprawność wczytywania danych i podstawowych operacji algorytmu ewolucyjnego.
-
-```
-
-```
+- **`tests/tester.py`** - Pomocniczy skrypt weryfikujący poprawność wczytywania danych i podstawowych operacji algorytmu ewolucyjnego.
