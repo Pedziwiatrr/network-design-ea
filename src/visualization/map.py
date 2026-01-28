@@ -1,10 +1,17 @@
+import sys
+import os
+
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import networkx as nx
-import os
 import argparse
 import numpy as np
 import random
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_root)
+
 from src.utils.loader import SNDlibLoader
 from src.ea import EvoSolver
 from src import config
