@@ -2,12 +2,6 @@
 
 ### Autorzy: Kacper Siemionek, Michał Pędziwiatr
 
-![kacper_simonek](results/plots/kacper_siemionek.png)
-
-![siemionek_kacper](results/plots/siemionek_kacper.png)
-
-![szymon_siemionek](results/plots/szymon_siemionek.png)
-
 # Wymagania
 
 - Python 3.10 lub nowszy
